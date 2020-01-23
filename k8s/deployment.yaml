@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homecoach-prometheus-exporter
+  labels:
+    app: homecoach-prometheus-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homecoach-prometheus-exporter
+  template:
+    metadata:
+      labels:
+        app: homecoach-prometheus-exporter
+    spec:
+      containers:
+        - name: homecoach-prometheus-exporter
+          image: "djetelina/netatmo-homecoach-prometheus-exporter:1.0"
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: homecoach-prometheus-exporter
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            periodSeconds: 30
+            timeoutSeconds: 1
+            initialDelaySeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            periodSeconds: 30
+            timeoutSeconds: 5
+            initialDelaySeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            httpGet:
+              port: http
+              path: /
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi

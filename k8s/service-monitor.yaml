@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: homecoach-prometheus-exporter
+  labels:
+    app: homecoach-prometheus-exporter
+    prometheus: brown-prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+      - <namespace>
+  selector:
+    matchLabels:
+      app: homecoach-prometheus-exporter
+  endpoints:
+    - port: http
+      interval: 30s
+      path: /
